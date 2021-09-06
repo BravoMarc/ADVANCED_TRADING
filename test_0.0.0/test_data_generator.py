@@ -35,7 +35,7 @@ historical['High'][key]=[]
 historical['low'][key]=[]
 historical['date'][key]=[]
 for line in bars:
-    historical['High'][key].append(float(line[3]))
+    historical['High'][key].append(float(line[2]))
     historical['low'][key].append(float(line[3]))
     historical['CLOSE'][key].append(float(line[4]))
     historical['date'][key].append(time.strftime('%H:%M:%S', tm.localtime(line[6]/1000)))
@@ -54,9 +54,9 @@ df=pd.Series(historical['CLOSE'][key])
 slowk, slowd = ta.STOCH(high, low, close, fastk_period=14,
  slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
 
-#print(slowk)
+print(slowk[-1])
+print(slowd[-1])
 print('')
-#print(slowd)
 dfhigh=pd.Series(historical['High'][key])
 dflow=pd.Series(historical['low'][key])
 
@@ -64,10 +64,12 @@ stoch=pdt.stoch(dfhigh,dflow,df,k=14, d=3, smooth_k=3, mamode=None, offset=None,
 print(stoch.iloc[-1,:])
 
 macd=pdt.macd(df)
-print(macd)
+
 
 macd, signal, hist=ta.MACD(close,fastperiod=12,slowperiod=26, signalperiod=9)
 
 print(macd[-1])
 print(signal[-1])
 print(hist[-1])
+
+
