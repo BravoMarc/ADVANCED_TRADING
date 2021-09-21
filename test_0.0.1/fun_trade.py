@@ -67,3 +67,44 @@ def rsi(df, periods = 14, ema = True):
     rsi = 100 - (100/(1 + rsi))
     return rsi
 
+
+def sell_buy_f(df_pandas):
+    action=[]
+    price_action=[]
+    action.append(np.nan)
+    price_action.append(np.nan)
+    num=len(df_pandas["macd_hist"])
+    act=0
+    for i in range(1,num):
+        if df_pandas["macd_hist"][i-1]>=0 and df_pandas["macd_hist"][i]<0 and act==1:
+            action.append('sell')
+            act=0
+            price_action.append(df_pandas["close"][i])
+        elif df_pandas["macd"][i]<0 and df_pandas["macd_hist"][i-1]<=0 and df_pandas["macd_hist"][i]>0:
+            action.append('buy')
+            act=1
+            price_action.append(df_pandas["close"][i])
+        else:
+            action.append(np.nan)
+            price_action.append(np.nan)
+
+    df_pandas["action"]=action
+    df_pandas["price_action"]=price_action
+
+def ganancias(df_pandas):
+
+    ope=df_pandas[df_pandas['action'].isna()==False][['price_action','action']]
+    if ope['action'][0]=='sell':
+        ope=ope[1::]
+    if ope['action'][-1]=='buy':
+        ope=ope[:-1]
+
+    num=len(ope["action"])
+    gan=1
+    for i in range(0,num,2):
+        buy=ope['price_action'][i]
+        sell=ope['price_action'][i+1]
+        gan*=1+(sell-buy)/buy
+
+    return gan
+    
